@@ -6,7 +6,6 @@
 
 - 🔍 Real-time recipe search
 - 🧾 Detailed recipe cards with ingredients and instructions
-- 📺 YouTube tutorial links (if available)
 - ♾️ Infinite scrolling for better user experience
 - ⚡ Optimized and responsive UI
 - ✅ Code quality tools: ESLint, Prettier, cSpell
