@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useCallback } from "react";
 import InfiniteScroll from "./components/InfiniteScroll";
+import RecipeCard from "./components/RecipeCard";
 
 interface Recipe {
   idMeal: string;
