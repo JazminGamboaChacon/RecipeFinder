@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, useTransition, useCallback } from "react";
+import InfiniteScroll from "./components/InfiniteScroll";
+import RecipeCard from "./components/RecipeCard";
+import RecipeDetail from "./components/RecipeDetail";
+import Header from "./components/Header";
 
 interface Recipe {
   idMeal: string;
@@ -53,6 +57,8 @@ export default function Home() {
           </li>
         ))}
       </ul>
+
+      <InfiniteScroll fetchMore={() => fetchRecipes(query)} />
     </div>
   );
 }
