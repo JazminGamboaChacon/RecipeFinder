@@ -66,8 +66,8 @@ You can easily deploy this app using [Vercel](https://vercel.com):
 
 ## 📸 Screenshots
 
-![Search UI](screenshots/search.png)
-![Recipe Details](screenshots/details.png)
+![Search UI](recipe-finder/screenshots/search.png)
+![Recipe Details](recipe-finder/screenshots/search.png)
 
 
 ---
