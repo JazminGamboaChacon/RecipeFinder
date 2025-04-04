@@ -1,103 +1,122 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useTransition, useCallback } from "react";
+import InfiniteScroll from "./components/InfiniteScroll";
+import RecipeCard from "./components/RecipeCard";
+import RecipeDetail from "./components/RecipeDetail";
+import Header from "./components/Header";
+
+interface Recipe {
+  idMeal: string;
+  strMeal: string;
+  strCategory: string;
+  strArea: string;
+  strInstructions: string;
+  strMealThumb: string;
+  strYoutube: string;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [query, setQuery] = useState<string>("");
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [isPending, startTransition] = useTransition();
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const fetchRecipes = useCallback(async (searchQuery: string) => {
+    if (!searchQuery) return;
+    try {
+      const response = await fetch(`/api/recipes?query=${searchQuery}`);
+      const data: Recipe[] = await response.json();
+      setRecipes(data);
+    } catch (error) {
+      console.error("Error fetching recipes:", error);
+    }
+  }, []);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+
+    startTransition(() => {
+      fetchRecipes(value);
+    });
+  };
+
+  const handleSelectRecipe = (idMeal: string) => {
+    const recipe = recipes.find((r) => r.idMeal === idMeal) || null;
+    setSelectedRecipe(recipe);
+  };
+
+  const handleBack = () => {
+    setSelectedRecipe(null);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col items-center">
+      <Header />
+
+      {!selectedRecipe && (
+        <section
+          className="w-full max-w-2xl mt-8 p-6 rounded-xl relative bg-cover bg-top"
+          style={{
+            backgroundImage:
+              "url('https://img.freepik.com/free-vector/hand-drawn-pattern-background_23-2150829939.jpg?t=st=1743266812~exp=1743270412~hmac=d7bfd10f988bcd5527428fa3840d7c00deaaa15d5021fbb5fc328926346859d3&w=900')",
+          }}
+        >
+          <div className="relative w-full">
+            <input
+              type="text"
+              placeholder="Search for a recipe..."
+              value={query}
+              onChange={handleSearch}
+              className="p-3 pl-10 rounded-full w-full text-lg shadow-md focus:outline-none bg-white/70 border-none backdrop-blur-sm"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            <svg
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-[#15BFAE]"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M21 21l-4.35-4.35m0 0a8.5 8.5 0 111.42-1.42L21 21z"
+              />
+            </svg>
+          </div>
+        </section>
+      )}
+
+      <div className="w-full max-w-7xl px-4">
+        {!selectedRecipe ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+            {recipes.map((recipe) => (
+              <div className="recipe-card border-none" key={recipe.idMeal}>
+                <RecipeCard
+                  idMeal={recipe.idMeal}
+                  strMeal={recipe.strMeal}
+                  strMealThumb={recipe.strMealThumb}
+                  onSelect={handleSelectRecipe}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <RecipeDetail
+            strMeal={selectedRecipe.strMeal}
+            strCategory={selectedRecipe.strCategory}
+            strArea={selectedRecipe.strArea}
+            strInstructions={selectedRecipe.strInstructions}
+            strMealThumb={selectedRecipe.strMealThumb}
+            strYoutube={selectedRecipe.strYoutube}
+            onBack={handleBack}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        )}
+      </div>
+
+      {!selectedRecipe && <InfiniteScroll fetchMore={() => fetchRecipes(query)} />}
     </div>
   );
 }

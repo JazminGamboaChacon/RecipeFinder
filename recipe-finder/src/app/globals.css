@@ -14,9 +14,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #e7e7d7;
+    --foreground: #0a0a0a;
   }
+  
+  
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #e7e7d7;
+      --foreground: #0a0a0a;
+    }
+  }
+  
 }
 
 body {
@@ -24,3 +33,9 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.recipe-card {
+  max-width: 280px;
+  margin: 10px;
+}
+
