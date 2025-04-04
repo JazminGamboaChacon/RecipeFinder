@@ -24,7 +24,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/recipe-finder.git
+git clone https://github.com/JazminGamboaChacon/RecipeFinder.git
 
 # Navigate into the project
 cd recipe-finder
